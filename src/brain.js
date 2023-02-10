@@ -68,7 +68,7 @@ function think(cerebellumClient) {
     console.log("RIGHT WALL TOO CLOSE");
     CerebellumService.commands.sendTurn(
       cerebellumClient,
-      30, CerebellumService.commands.TURN_DIRECTIONS.turnLeft, RESET_POSITION.no,
+      30, TURN_DIRECTIONS.turnLeft, RESET_POSITION.no,
     );
     return;
   }
