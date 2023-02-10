@@ -1,24 +1,21 @@
 const RobotMotoricsState = require("../../state/robotMotoricsState");
 const FunctionMap = require("../../utils/functionMap");
 
-const handlersByCommandName = new FunctionMap();
 const { Movement: MovementState, Distances: DistancesState } = RobotMotoricsState;
 
 function receiveDistanceSensorsValues(command, values) {
   values = values.map(Number);
   DistancesState.setDistanceMeasurements(values);
 }
-handlersByCommandName.map("DST", receiveDistanceSensorsValues);
 
 function receiveGoBackResponse() {
   handleCommandFinished("BCK");
 }
-handlersByCommandName.map("BCK", receiveGoBackResponse);
 
 function receiveGoForwardResponse() {
+  console.log("GOT FWD BACK");
   handleCommandFinished("FWD");
 }
-handlersByCommandName.map("FWD", receiveGoForwardResponse);
 
 function receiveTurnResponse(command, [absoluteRotation, relativeRotation]) {
   MovementState.stop();
@@ -27,7 +24,6 @@ function receiveTurnResponse(command, [absoluteRotation, relativeRotation]) {
   relativeRotation = Number(relativeRotation);
   console.log(`Turned to ${absoluteRotation} ${relativeRotation}`);
 }
-handlersByCommandName.map("TRN", receiveTurnResponse);
 
 function receiveGetPositionResponse(
   command,
@@ -38,12 +34,10 @@ function receiveGetPositionResponse(
   relativeRotation = Number(relativeRotation);
   console.log(`Current position: ${absoluteRotation} ${relativeRotation}`);
 }
-handlersByCommandName.map("POS", receiveGetPositionResponse);
 
 function receiveRebootResponse() {
   handleCommandFinished("RBT");
 }
-handlersByCommandName.map("RBT", receiveRebootResponse);
 
 function handleCommandFinished(command) {
   let duration = null;
@@ -56,5 +50,15 @@ function handleCommandFinished(command) {
 
   console.log(`Command ${command} executed in ${duration}ms`);
 }
+
+
+const handlersByCommandName = {
+  "DST": receiveDistanceSensorsValues,
+  "BCK": receiveGoBackResponse,
+  "FWD": receiveGoForwardResponse,
+  "TRN": receiveTurnResponse,
+  "POS": receiveGetPositionResponse,
+  "RBT": receiveRebootResponse,
+};
 
 module.exports = handlersByCommandName;

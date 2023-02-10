@@ -43,7 +43,6 @@ function think(cerebellumClient) {
   const { DIRECTIONS } = RobotMotoricsState.Distances;
 
   if (CommandExecution.isExecutionBlocked()) {
-    console.log(`Command in progress ${CommandExecution.getCommandInExecution()}`)
     return;
   }
 

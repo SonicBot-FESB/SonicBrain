@@ -32,8 +32,7 @@ function onData(data) {
     data = data.toString();
     const [command, ...values] = data.split(" ");
 
-    const cmdHandler = handlersByCommandName.get(command);
-
+    const cmdHandler = handlersByCommandName[command];
     if (! cmdHandler) {
         console.error(`Command not implemented: ${command}`);
         return;

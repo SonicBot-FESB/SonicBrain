@@ -29,9 +29,10 @@ async function connect() {
 }
 
 function onData(data) {
+    data = data.slice(0, -1);
     const [command, ...values] = data.split(" ")
 
-    const cmdHandler = handlersByCommandName.get(command);
+    const cmdHandler = handlersByCommandName[command];
     if (!cmdHandler) {
         console.log(`Command not implemented: ${command}`);
         return;
