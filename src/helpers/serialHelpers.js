@@ -2,13 +2,13 @@ const serial = require("serialport");
 
 async function getDeviceSerialPort() {
     const {
-        MICROCONTROLLER_SERIAL_PORT,
+        MICROCONTROLLER_SERIAL_NUMBER,
         BAUD_RATE,
     } = process.env;
 
     const ports = await serial.SerialPort.list();
     const devicePortInfo = ports.filter(port =>
-        port.path === MICROCONTROLLER_SERIAL_PORT
+        port.serialNumber === MICROCONTROLLER_SERIAL_NUMBER
     )[0];
     
     if (!devicePortInfo) {
