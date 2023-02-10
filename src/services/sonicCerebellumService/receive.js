@@ -39,6 +39,11 @@ function receiveRebootResponse() {
   handleCommandFinished("RBT");
 }
 
+function receiveError(cmd, args) {
+  console.log("ERROR");
+  console.log(" ".join(args));
+}
+
 function handleCommandFinished(command) {
   let duration = null;
   try {
@@ -59,6 +64,7 @@ const handlersByCommandName = {
   "TRN": receiveTurnResponse,
   "POS": receiveGetPositionResponse,
   "RBT": receiveRebootResponse,
+  "ERR": receiveError,
 };
 
 module.exports = handlersByCommandName;
