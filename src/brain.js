@@ -56,6 +56,9 @@ function think(cerebellumClient) {
 
   if (isWallTooCloseLeft) {
     console.log("LEFT WALL TOO CLOSE");
+    if (MovementState.isMoving()) {
+      CerebellumService.commands.sendStop(cerebellumClient);
+    }
     CerebellumService.commands.sendTurn(
       cerebellumClient,
       30, TURN_DIRECTIONS.turnRight, RESET_POSITION.no,
@@ -65,6 +68,9 @@ function think(cerebellumClient) {
 
   if (isWallTooCloseRight) {
     console.log("RIGHT WALL TOO CLOSE");
+    if (MovementState.isMoving()) {
+      CerebellumService.commands.sendStop(cerebellumClient);
+    }
     CerebellumService.commands.sendTurn(
       cerebellumClient,
       30, TURN_DIRECTIONS.turnLeft, RESET_POSITION.no,

@@ -41,8 +41,13 @@ function receiveRebootResponse() {
 
 function receiveError(cmd, args) {
   console.log("ERROR");
-  console.log(" ".join(args));
+  console.log(args.join(" "));
 }
+
+function receiveStopResponse(cmd, args) {
+  handleCommandFinished("STP");
+}
+
 
 function handleCommandFinished(command) {
   let duration = null;
@@ -64,6 +69,7 @@ const handlersByCommandName = {
   "TRN": receiveTurnResponse,
   "POS": receiveGetPositionResponse,
   "RBT": receiveRebootResponse,
+  "STP": receiveStopResponse,
   "ERR": receiveError,
 };
 

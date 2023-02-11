@@ -21,39 +21,42 @@ const { Movement: MovementState } = RobotMotoricsState;
 module.exports.sendGoForward = function (serialPort) {
     handleExecuteCommand("FWD");
     MovementState.goForward(); 
-    serialPort.write("FWD");
+    serialPort.write("FWD\n");
 };
 
 module.exports.sendGoBackward = function (serialPort) {
     handleExecuteCommand("BCK");
     MovementState.goBack();
-    serialPort.write("BCK");
+    serialPort.write("BCK\n");
 };
 
 module.exports.sendStop = function (serialPort) {
     handleExecuteCommand("STP");
     MovementState.stop();
-    serialPort.write("STP");
+    serialPort.write("STP\n");
 };
 
 module.exports.sendTurn = function (serialPort, degrees, direction, resetPosition) {
     handleExecuteCommand("TRN");
     MovementState.turn();
-    serialPort.write(`TRN ${degrees} ${direction} ${resetPosition}`);
+    console.log(`TRN ${degrees} ${direction} ${resetPosition}`);
+    serialPort.write(`TRN ${degrees} ${direction}\n`);
 };
 
 module.exports.sendGetPosition = function (serialPort) {
-    handleExecuteCommand("POS"); serialPort.write("POS"); }
+    handleExecuteCommand("POS");
+    serialPort.write("POS\n"); }
 
 module.exports.sendReboot = function (serialPort) {
     handleExecuteCommand("RBT");
-    serialPort.write("RBT");
+    serialPort.write("RBT\n");
 }
 
 function handleExecuteCommand(command) {
     const isBlocked = RobotMotoricsState.CommandExecution.isExecutionBlocked();
     if (isBlocked) {
-        throw "Robot is blocked, can't accept new commands";
+        console.log("Robot is blocked, can't accept new commands");
+        return;
     }
     RobotMotoricsState.CommandExecution.setCommandInExecution(command);
 }
