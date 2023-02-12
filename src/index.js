@@ -44,9 +44,12 @@ function main(){
     }, 1000);
 
 
-    setInterval(() => {
+    setInterval(async () => {
         if (Brain.isReady()) {
             Brain.think(cerebellumClient);
+        }
+        else {
+            console.log("NOT READY");
         }
     }, 1);
 }

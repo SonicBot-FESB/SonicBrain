@@ -39,8 +39,7 @@ module.exports.sendStop = function (serialPort) {
 module.exports.sendTurn = function (serialPort, degrees, direction, resetPosition) {
     handleExecuteCommand("TRN");
     MovementState.turn();
-    console.log(`TRN ${degrees} ${direction} ${resetPosition}`);
-    serialPort.write(`TRN ${degrees} ${direction}\n`);
+    serialPort.write(`TRN ${degrees} ${direction} ${resetPosition}\n`);
 };
 
 module.exports.sendGetPosition = function (serialPort) {

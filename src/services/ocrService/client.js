@@ -17,7 +17,9 @@ const connect = (function() {
 
         client.on("error", (error) => {
             client = null;
-            console.log(`Connection Error ${error}`);
+            if (!error.toString().includes("ECONNREFUSED")) {
+                console.log(`Connection Error ${error}`);
+            }
             CharacterRecognitionState.isConnectedToOcr = false; 
         });
         client.on("connect", onConnect);
