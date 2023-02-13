@@ -42,7 +42,7 @@ function main(){
             clearInterval(intervalId2);
             console.log("Connected to teensy");
             sendResetPosition(cerebellumClient);
-            sendStop(cerebellumClient);
+            // sendStop(cerebellumClient);
         }
     }, 1000);
 

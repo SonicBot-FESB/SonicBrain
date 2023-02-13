@@ -30,9 +30,11 @@ module.exports.handleDoors = function(cerebellumClient) {
     sendTurn(
       cerebellumClient, DIRECTIONS.left, RESET_POSITION.yes,
     );
+    console.log("DOOR LEFT");
     return true;
   }
   if (isDoorRight) {
+    console.log("DOOR RIGHT");
     sendTurn(
       cerebellumClient, DIRECTIONS.right, RESET_POSITION.yes,
     );
