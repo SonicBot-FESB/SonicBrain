@@ -49,6 +49,11 @@ function receiveStopResponse(cmd, args) {
 }
 
 
+function receiveResetPositionResponse(cmd, args) {
+  handleCommandFinished("RPS");
+}
+
+
 function handleCommandFinished(command) {
   let duration = null;
   try {
@@ -71,6 +76,7 @@ const handlersByCommandName = {
   "RBT": receiveRebootResponse,
   "STP": receiveStopResponse,
   "ERR": receiveError,
+  "RPS": receiveResetPositionResponse,
 };
 
 module.exports = handlersByCommandName;

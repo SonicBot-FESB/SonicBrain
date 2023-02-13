@@ -1,5 +1,5 @@
 const net = require("net");
-const { CHARACTER_RECOGNITION_CLIENT_HOST, CHARACTER_RECOGNITION_CLIENT_PORT } = require("../../config");
+const { CHARACTER_RECOGNITION_SERVER_HOST, CHARACTER_RECOGNITION_SERVER_PORT } = require("../../config");
 const CharacterRecognitionState = require("../../state/characterRecognitionState");
 const handlersByCommandName = require("./receive");
 
@@ -11,8 +11,8 @@ const connect = (function() {
         }
 
         client = net.connect({
-            host: CHARACTER_RECOGNITION_CLIENT_HOST,
-            port: CHARACTER_RECOGNITION_CLIENT_PORT,
+            host: CHARACTER_RECOGNITION_SERVER_HOST,
+            port: CHARACTER_RECOGNITION_SERVER_PORT,
         });
 
         client.on("error", (error) => {

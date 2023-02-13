@@ -1,3 +1,4 @@
+const OcrCommandExecutionState = require("../../state/characterRecognitionState");
 const CharacterRecognitionState = require("../../state/characterRecognitionState");
 const FunctionMap = require("../../utils/functionMap");
 
@@ -19,7 +20,12 @@ function receiveError(cmd, [error]) {
   console.error(`Received: ${error}`);
 }
 
+function receiveCharacterDetected() {
+  CharacterRecognitionState.characterDetected();
+}
+
 function receivePredictions(cmd, [character, prediction]) {
+  OcrCommandExecutionState.commandExecuted(cmd);
   console.log(character, Number(prediction));
   CharacterRecognitionState.setPredictions(character, Number(prediction));
 }
@@ -30,6 +36,7 @@ const handlersByCommandName = {
   "STT": receiveGetStatusResponse,
   "ERR": receiveError,
   "PRD": receivePredictions,
+  "CHR": receiveCharacterDetected,
 };
 
 module.exports = handlersByCommandName;

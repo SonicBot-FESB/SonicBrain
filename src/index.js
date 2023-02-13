@@ -6,7 +6,8 @@ const OcrService = require("./services/ocrService");
 const CerebellumService = require("./services/sonicCerebellumService");
 const CharacterRecognitionState = require("./state/characterRecognitionState.js");
 const RobotMotoricsState = require("./state/robotMotoricsState.js");
-const Brain = require("./brain.js");
+const Brain = require("./brain");
+const { sendResetPosition, sendStop } = require("./services/sonicCerebellumService/send.js");
 
 const buffer = [];
 function onSerialReadLine(line) {
@@ -40,6 +41,8 @@ function main(){
         if (RobotMotoricsState.CommandExecution.isConnected) {
             clearInterval(intervalId2);
             console.log("Connected to teensy");
+            sendResetPosition(cerebellumClient);
+            sendStop(cerebellumClient);
         }
     }, 1000);
 
@@ -47,9 +50,6 @@ function main(){
     setInterval(async () => {
         if (Brain.isReady()) {
             Brain.think(cerebellumClient);
-        }
-        else {
-            console.log("NOT READY");
         }
     }, 1);
 }

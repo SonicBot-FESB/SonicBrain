@@ -51,6 +51,11 @@ module.exports.sendReboot = function (serialPort) {
     serialPort.write("RBT\n");
 }
 
+module.exports.sendResetPosition = function (serialPort) {
+    handleExecuteCommand("RPS");
+    serialPort.write("RPS\n");
+}
+
 function handleExecuteCommand(command) {
     const isBlocked = RobotMotoricsState.CommandExecution.isExecutionBlocked();
     if (isBlocked) {
