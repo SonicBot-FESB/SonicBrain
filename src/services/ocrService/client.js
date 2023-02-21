@@ -12,8 +12,7 @@ const connect = (function() {
 
         client = net.connect({
             host: CHARACTER_RECOGNITION_SERVER_HOST,
-            port: CHARACTER_RECOGNITION_SERVER_PORT,
-        });
+            port: CHARACTER_RECOGNITION_SERVER_PORT, });
 
         client.on("error", (error) => {
             client = null;

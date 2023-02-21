@@ -1,6 +1,7 @@
-const Queue = require("../utils/queue.js");
+const DistanceSeries = require("../utils/distanceSeries.js");
+const { delay } = require("../utils/sleep.js");
 
-const MAX_QUEUE_LENGTH = 30;
+const MAX_QUEUE_LENGTH = 500;
 
 const SENSOR_POSITIONS = {
     frontLeft: "frontLeft", 
@@ -19,42 +20,35 @@ const DIRECTIONS = {
 
 class RobotDistancesStorage {
     static #distanceValues = {
-        "frontLeft": new Queue(MAX_QUEUE_LENGTH),
-        "frontRight": new Queue(MAX_QUEUE_LENGTH),
-        "leftFront": new Queue(MAX_QUEUE_LENGTH),
-        "leftBack": new Queue(MAX_QUEUE_LENGTH),
-        "rightFront": new Queue(MAX_QUEUE_LENGTH),
-        "rightBack": new Queue(MAX_QUEUE_LENGTH),
+        "frontLeft": new DistanceSeries(MAX_QUEUE_LENGTH),
+        "frontRight": new DistanceSeries(MAX_QUEUE_LENGTH),
+        "leftFront": new DistanceSeries(MAX_QUEUE_LENGTH),
+        "leftBack": new DistanceSeries(MAX_QUEUE_LENGTH),
+        "rightFront": new DistanceSeries(MAX_QUEUE_LENGTH),
+        "rightBack": new DistanceSeries(MAX_QUEUE_LENGTH),
     };
     static SENSOR_POSITIONS = SENSOR_POSITIONS;
     static DIRECTIONS = DIRECTIONS;
 
     static setDistanceMeasurements([fl, fr, lf, lb, rf, rb]) {
-        this.#distanceValues.frontLeft.enqueue(fl);
-        this.#distanceValues.frontRight.enqueue(fr);
+        fl && fl < 1023 && this.#distanceValues.frontLeft.enqueue(fl);
+        fr && fr < 1023 && this.#distanceValues.frontRight.enqueue(fr);
 
-        this.#distanceValues.leftFront.enqueue(lf);
-        this.#distanceValues.leftBack.enqueue(lb);
+        lf && lf < 1023 && this.#distanceValues.leftFront.enqueue(lf);
+        lb && lb < 1023 && this.#distanceValues.leftBack.enqueue(lb);
 
-        this.#distanceValues.rightFront.enqueue(rf);
-        this.#distanceValues.rightBack.enqueue(rb);
+        rf && rf < 1023 && this.#distanceValues.rightFront.enqueue(rf);
+        rb && rb < 1023 && this.#distanceValues.rightBack.enqueue(rb);
     }
 
     static getDistanceMean(sensorPosition) {
         const distances = this.#distanceValues[sensorPosition];
-        const distancesSum = distances.reduce(
-            (sum, val) => sum + val,
-            0,
-        );
-        return distancesSum / distances.length;
+        return distances.mean();
     }
 
     static getDistanceRange(sensorPosition) {
         const distances = this.#distanceValues[sensorPosition]; 
-        const min = Math.min(...distances);
-        const max = Math.max(...distances);
-
-        return max - min;
+        return distances.range();
     }
 
     static getDistances(sensorPosition) {
@@ -65,6 +59,7 @@ class RobotDistancesStorage {
 
 class RobotCommandExecutionState {
     static #commandInExecution = null;     
+    static #error = false;
     static #commandStartedAt = null;
     static isConnected = false;
 
@@ -75,6 +70,12 @@ class RobotCommandExecutionState {
 
     static isCommandBeingExecuted(command) {
         return command === this.#commandInExecution;
+    }
+
+    static async waitForCommandToFinish() {
+        while (this.#commandInExecution !== null) {
+            await delay(100);
+        }  
     }
 
     static commandExecuted(command) {
@@ -88,11 +89,19 @@ class RobotCommandExecutionState {
     }
 
     static isExecutionBlocked() {
-        return this.#commandInExecution !== null;
+        return this.#commandInExecution !== null || this.#error;
     }
 
     static getCommandInExecution() {
         return this.#commandInExecution;
+    }
+
+    static erroredOut() {
+        this.#error = true;
+    }
+
+    static clearError() {
+        this.#error = false;
     }
 }
 

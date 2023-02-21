@@ -1,14 +1,15 @@
 const CerebellumService = require("../../services/sonicCerebellumService");
 const { RESET_POSITION } = require("../../services/sonicCerebellumService/send");
 const RobotMotoricsState = require("../../state/robotMotoricsState");
+const { delay } = require("../../utils/sleep");
 const { SENSOR_POSITION_PAIR_BY_DIRECTION } = require("../consts");
 
 
 
 const DIRECTION_WALL_MIN_DISTANCE = {
-  left: 400,
-  right: 400,
-  front: 700,
+  left: 600,
+  right: 600,
+  front: 500,
 }
 
 function moveFromWall(cerebellumClient, direction) {
@@ -22,7 +23,7 @@ function moveFromWall(cerebellumClient, direction) {
 
   sendTurn(
     cerebellumClient,
-    45, turnDirection, RESET_POSITION.no,
+    20, turnDirection, RESET_POSITION.no,
   );
 }
 
@@ -33,23 +34,23 @@ function isWallTooClose(direction) {
   const d1 = Distances.getDistanceMean(s1Pos);
   const d2 = Distances.getDistanceMean(s2Pos);
 
-  const r1 = Distances.getDistanceRange(s1Pos);
-  const r2 = Distances.getDistanceRange(s2Pos);
-
   const minWallDistance = DIRECTION_WALL_MIN_DISTANCE[direction];
 
-  const isAccurate = r1 < 100 && r2 < 100;
   const isWallTooClose = d1 >= minWallDistance && d2 >= minWallDistance;
-  return isWallTooClose && isAccurate;
+  return isWallTooClose;
 }
 
+let lastDoor = Infinity;
 
-module.exports.handleWallTooClose = function(cerebellumClient) {
-  const { DIRECTIONS } = RobotMotoricsState.Distances;
-  const { sendStop } = CerebellumService.commands;
+module.exports.handleWallTooClose = async function(cerebellumClient) {
+  const { DIRECTIONS  } = RobotMotoricsState.Distances;
+  const { CommandExecution } = RobotMotoricsState;
+  const { sendStop, sendTurn, TURN_DIRECTIONS } = CerebellumService.commands;
 
   const isWallTooCloseLeft = isWallTooClose(DIRECTIONS.left);
   const isWallTooCloseRight = isWallTooClose(DIRECTIONS.right);
+  const isWallTooCloseFront = isWallTooClose(DIRECTIONS.front);
+
 
   if (isWallTooCloseLeft && isWallTooCloseRight) {
     console.log("Robot probably stuck...");
@@ -57,13 +58,28 @@ module.exports.handleWallTooClose = function(cerebellumClient) {
     return;
   }
 
+
+  if (isWallTooCloseFront) {
+    sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
+    await CommandExecution.waitForCommandToFinish();
+    sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
+    await CommandExecution.waitForCommandToFinish();
+    return true;
+  }
+
+  if (isFinite(lastDoor) && (Date.now() - lastDoor) < 5200) {
+    return false;
+  }
+
   if (isWallTooCloseLeft) {
-    moveFromWall(cerebellumClient, DIRECTIONS.left);
+    moveFromWall(cerebellumClient, DIRECTIONS.right);
+    lastDoor = Date.now();
     return true;
   }
 
   if (isWallTooCloseRight) {
-    moveFromWall(cerebellumClient, DIRECTIONS.right);
+    moveFromWall(cerebellumClient, DIRECTIONS.left);
+    lastDoor = Date.now();
     return true;
   }
 }

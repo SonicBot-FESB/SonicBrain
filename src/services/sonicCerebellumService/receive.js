@@ -13,13 +13,12 @@ function receiveGoBackResponse() {
 }
 
 function receiveGoForwardResponse() {
-  console.log("GOT FWD BACK");
   handleCommandFinished("FWD");
 }
 
 function receiveTurnResponse(command, [absoluteRotation, relativeRotation]) {
-  MovementState.stop();
   handleCommandFinished("TRN");
+  MovementState.stop(); // After turning the robot stops
   absoluteRotation = Number(absoluteRotation);
   relativeRotation = Number(relativeRotation);
   console.log(`Turned to ${absoluteRotation} ${relativeRotation}`);
@@ -40,6 +39,7 @@ function receiveRebootResponse() {
 }
 
 function receiveError(cmd, args) {
+  RobotMotoricsState.CommandExecution.erroredOut();
   console.log("ERROR");
   console.log(args.join(" "));
 }

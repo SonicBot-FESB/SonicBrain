@@ -6,7 +6,7 @@ const { handleWallTooClose } = require("./decisions/handleWallTooClose");
 const { handleDoors } = require("./decisions/handleDoors");
 
 
-function think(cerebellumClient) {
+async function think(cerebellumClient) {
   const { CommandExecution, Movement: MovementState } = RobotMotoricsState;
 
   if (
@@ -17,12 +17,12 @@ function think(cerebellumClient) {
   }
 
   const decisionsPipeline = [
-    // () => handleWallTooClose(cerebellumClient),
-    () => handleDoors(cerebellumClient),
+    async () => await handleWallTooClose(cerebellumClient),
+    async () => await handleDoors(cerebellumClient),
   ];
 
   for (let decision of decisionsPipeline) {
-    if (decision()) {
+    if (await decision()) {
       return;
     }
   } 

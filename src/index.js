@@ -8,6 +8,7 @@ const CharacterRecognitionState = require("./state/characterRecognitionState.js"
 const RobotMotoricsState = require("./state/robotMotoricsState.js");
 const Brain = require("./brain");
 const { sendResetPosition, sendStop } = require("./services/sonicCerebellumService/send.js");
+const { delay } = require("./utils/sleep.js");
 
 const buffer = [];
 function onSerialReadLine(line) {
@@ -23,7 +24,7 @@ async function test_serial() {
     parser.on("data", console.log);
 }
 
-function main(){
+async function main(){
     let ocrClient = null;
     console.log("Connecting to OCR server...")
     const intervalId1 = setInterval(() => {
@@ -47,11 +48,12 @@ function main(){
     }, 1000);
 
 
-    setInterval(async () => {
+    while (1) {
         if (Brain.isReady()) {
-            Brain.think(cerebellumClient);
+            await Brain.think(cerebellumClient);
         }
-    }, 1);
+        await delay(10);
+    }
 }
 
 main();

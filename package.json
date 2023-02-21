@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.0.3",
+    "numjs": "^0.16.1",
     "serialport": "^10.5.0"
   }
 }

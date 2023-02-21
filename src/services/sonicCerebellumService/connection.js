@@ -15,7 +15,11 @@ async function connect() {
     const readParser = new serial.ReadlineParser();
     serialPort.pipe(readParser);
 
-    readParser.on("data", onData);
+    readParser.on("data", (data) => {
+        onData(data);
+        // serialPort.flush();
+    });
+
     readParser.on("close", () => {
         console.log("Connection to microcontroller ended!");
         RobotMotoricsState.CommandExecution.isConnected = false; 
