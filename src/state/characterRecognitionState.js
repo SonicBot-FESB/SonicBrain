@@ -1,3 +1,5 @@
+const { delay } = require("../utils/sleep");
+
 class OcrCommandExecutionState {
     static #commandInExecution = null;     
     static #commandStartedAt = null;
@@ -29,20 +31,22 @@ class OcrCommandExecutionState {
     static getCommandInExecution() {
         return this.#commandInExecution;
     }
+
+    static async waitForCommandToFinish() {
+        while (this.#commandInExecution !== null) {
+            await delay(100);
+        }  
+    }
 }
 
 class CharacterRecognitionState {  
     static #predictedCharacter = null;
     static #predictionProbability = null;
-    static #predictionsUpdatedAt = null;
+    static #predictionsUpdatedAt = 0;
 
-    static #lastCharacterDetected = Infinity;
+    static #lastCharacterDetected = 0;
 
     static #isPredictionRecognized = null;
-
-    static isOcrRunning = null;
-    static isOcrConnected = false;
-    static isConnectedToOcr = false;
     
     static setPredictions(character, value) {
         this.#predictedCharacter = character;
@@ -68,9 +72,6 @@ class CharacterRecognitionState {
     }
 
     static getCharacterDetectionFreshness() {
-        if (! isFinite(this.#lastCharacterDetected)) {
-            return Infinity;
-        }
         return Date.now() - this.#lastCharacterDetected;
     }
 
@@ -79,5 +80,7 @@ class CharacterRecognitionState {
     }
 }
 
-module.exports = CharacterRecognitionState;
-module.exports = OcrCommandExecutionState;
+module.exports = {
+    CharacterRecognitionState,
+    OcrCommandExecutionState
+};

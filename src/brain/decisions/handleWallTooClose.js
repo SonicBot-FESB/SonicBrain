@@ -42,7 +42,7 @@ function isWallTooClose(direction) {
 
 let lastDoor = Infinity;
 
-module.exports.handleWallTooClose = async function(cerebellumClient) {
+module.exports.handleWallTooClose = async function({ cerebellumClient }) {
   const { DIRECTIONS  } = RobotMotoricsState.Distances;
   const { CommandExecution } = RobotMotoricsState;
   const { sendStop, sendTurn, TURN_DIRECTIONS } = CerebellumService.commands;

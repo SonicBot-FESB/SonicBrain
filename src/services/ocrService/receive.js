@@ -1,6 +1,4 @@
-const OcrCommandExecutionState = require("../../state/characterRecognitionState");
-const CharacterRecognitionState = require("../../state/characterRecognitionState");
-const FunctionMap = require("../../utils/functionMap");
+const { CharacterRecognitionState, OcrCommandExecutionState } = require("../../state/characterRecognitionState");
 
 
 function receiveStartOcrResponse(cmd, data) {

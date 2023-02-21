@@ -28,7 +28,7 @@ function isDoor(direction) {
 
 let lastDoor = Infinity;
 
-module.exports.handleDoors = async function(cerebellumClient) {
+module.exports.handleDoors = async function({ cerebellumClient }) {
   const { DIRECTIONS } = RobotMotoricsState.Distances; 
   const { sendTurn, TURN_DIRECTIONS } = CerebellumService.commands;
 

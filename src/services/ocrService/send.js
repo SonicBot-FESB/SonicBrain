@@ -1,5 +1,5 @@
 const net = require("net");
-const OcrCommandExecutionState = require("../../state/characterRecognitionState");
+const { OcrCommandExecutionState } = require("../../state/characterRecognitionState");
 
 /**
  * Send STT command to image recognition server.

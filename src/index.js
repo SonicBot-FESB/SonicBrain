@@ -1,28 +1,10 @@
-const { execSync } = require("child_process");
-const { ReadlineParser } = require("serialport");
-const serial = require("serialport");
-const { getDeviceSerialPort } = require("./helpers/serialHelpers.js");
 const OcrService = require("./services/ocrService");
 const CerebellumService = require("./services/sonicCerebellumService");
-const CharacterRecognitionState = require("./state/characterRecognitionState.js");
+const { CharacterRecognitionState } = require("./state/characterRecognitionState.js");
 const RobotMotoricsState = require("./state/robotMotoricsState.js");
 const Brain = require("./brain");
-const { sendResetPosition, sendStop } = require("./services/sonicCerebellumService/send.js");
+const { sendResetPosition } = require("./services/sonicCerebellumService/send.js");
 const { delay } = require("./utils/sleep.js");
-
-const buffer = [];
-function onSerialReadLine(line) {
-    buffer.push(line);
-}
-
-async function test_serial() {
-    const buffer = [];
-    const serialPort = await getDeviceSerialPort();
-
-    const parser = new serial.ReadlineParser();
-    serialPort.pipe(parser);
-    parser.on("data", console.log);
-}
 
 async function main(){
     let ocrClient = null;
@@ -43,14 +25,13 @@ async function main(){
             clearInterval(intervalId2);
             console.log("Connected to teensy");
             sendResetPosition(cerebellumClient);
-            // sendStop(cerebellumClient);
         }
     }, 1000);
 
 
     while (1) {
         if (Brain.isReady()) {
-            await Brain.think(cerebellumClient);
+            await Brain.think(cerebellumClient, ocrClient);
         }
         await delay(10);
     }
