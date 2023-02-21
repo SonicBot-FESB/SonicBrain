@@ -1,7 +1,8 @@
 const DistanceSeries = require("../utils/distanceSeries.js");
 const { delay } = require("../utils/sleep.js");
 
-const MAX_QUEUE_LENGTH = 500;
+const MAX_QUEUE_LENGTH_SIDE = 500;
+const MAX_QUEUE_LENGTH_FRONT = 100;
 
 const SENSOR_POSITIONS = {
     frontLeft: "frontLeft", 
@@ -20,12 +21,12 @@ const DIRECTIONS = {
 
 class RobotDistancesStorage {
     static #distanceValues = {
-        "frontLeft": new DistanceSeries(MAX_QUEUE_LENGTH),
-        "frontRight": new DistanceSeries(MAX_QUEUE_LENGTH),
-        "leftFront": new DistanceSeries(MAX_QUEUE_LENGTH),
-        "leftBack": new DistanceSeries(MAX_QUEUE_LENGTH),
-        "rightFront": new DistanceSeries(MAX_QUEUE_LENGTH),
-        "rightBack": new DistanceSeries(MAX_QUEUE_LENGTH),
+        "frontLeft": new DistanceSeries(MAX_QUEUE_LENGTH_FRONT),
+        "frontRight": new DistanceSeries(MAX_QUEUE_LENGTH_FRONT),
+        "leftFront": new DistanceSeries(MAX_QUEUE_LENGTH_SIDE),
+        "leftBack": new DistanceSeries(MAX_QUEUE_LENGTH_SIDE),
+        "rightFront": new DistanceSeries(MAX_QUEUE_LENGTH_SIDE),
+        "rightBack": new DistanceSeries(MAX_QUEUE_LENGTH_SIDE),
     };
     static SENSOR_POSITIONS = SENSOR_POSITIONS;
     static DIRECTIONS = DIRECTIONS;

@@ -15,12 +15,8 @@ function isDoor(direction) {
   const r2 = Distances.getDistanceRange(s2Pos); // STRAZNJI
 
 
-  if (direction === "left") {
-    console.log(`${d1.toFixed(0)}\t${d2.toFixed(0)}\t${r1.toFixed(0)}\t${r2.toFixed(0)}`);
-  }
-
   if (d1 <= DOOR_DISTANCE_TRESHOLD && d2 <= DOOR_DISTANCE_TRESHOLD && r1 > 100 & r1 < 200) {
-    // console.log(`DOOR ${direction} ${d1} ${d2} ${r2}`);
+    console.log(`DOOR ${direction} ${d1} ${d2} ${r2}`);
     return true;
   }
   return false;

@@ -8,7 +8,6 @@ const { delay } = require("./utils/sleep.js");
 
 async function main(){
     let ocrClient = null;
-    console.log("Connecting to OCR server...")
     const intervalId1 = setInterval(() => {
         ocrClient = OcrService.client.connect()
         if (CharacterRecognitionState.isConnectedToOcr) {

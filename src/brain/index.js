@@ -18,8 +18,8 @@ async function think(cerebellumClient, ocrClient) {
   }
 
   const decisionsPipeline = [
-    // async () => await handleWallTooClose({ cerebellumClient }),
-    // async () => await handleDoors({ cerebellumClient }),
+    async () => await handleWallTooClose({ cerebellumClient }),
+    async () => await handleDoors({ cerebellumClient }),
     async () => await handleCharacterPrediction({ cerebellumClient, ocrClient }),
   ];
 

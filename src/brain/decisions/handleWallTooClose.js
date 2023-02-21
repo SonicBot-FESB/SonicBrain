@@ -1,14 +1,13 @@
 const CerebellumService = require("../../services/sonicCerebellumService");
 const { RESET_POSITION } = require("../../services/sonicCerebellumService/send");
 const RobotMotoricsState = require("../../state/robotMotoricsState");
-const { delay } = require("../../utils/sleep");
 const { SENSOR_POSITION_PAIR_BY_DIRECTION } = require("../consts");
 
 
 
 const DIRECTION_WALL_MIN_DISTANCE = {
-  left: 600,
-  right: 600,
+  left: 480,
+  right: 480,
   front: 500,
 }
 
@@ -23,7 +22,7 @@ function moveFromWall(cerebellumClient, direction) {
 
   sendTurn(
     cerebellumClient,
-    20, turnDirection, RESET_POSITION.no,
+    5, turnDirection, RESET_POSITION.yes,
   );
 }
 
@@ -36,7 +35,7 @@ function isWallTooClose(direction) {
 
   const minWallDistance = DIRECTION_WALL_MIN_DISTANCE[direction];
 
-  const isWallTooClose = d1 >= minWallDistance && d2 >= minWallDistance;
+  const isWallTooClose = d1 >= minWallDistance // && d2 >= minWallDistance;
   return isWallTooClose;
 }
 
@@ -58,8 +57,8 @@ module.exports.handleWallTooClose = async function({ cerebellumClient }) {
     return;
   }
 
-
   if (isWallTooCloseFront) {
+    console.log("WALL TO CLOSE ON THE FRONT");
     sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
     await CommandExecution.waitForCommandToFinish();
     sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
@@ -67,19 +66,23 @@ module.exports.handleWallTooClose = async function({ cerebellumClient }) {
     return true;
   }
 
-  if (isFinite(lastDoor) && (Date.now() - lastDoor) < 5200) {
+  if (isFinite(lastDoor) && (Date.now() - lastDoor) < 2000) {
     return false;
   }
 
   if (isWallTooCloseLeft) {
+    console.log("WALL TOO CLOSE ON THE LEFT");
     moveFromWall(cerebellumClient, DIRECTIONS.right);
     lastDoor = Date.now();
+    await CommandExecution.waitForCommandToFinish();
     return true;
   }
 
   if (isWallTooCloseRight) {
+    console.log("WALL TOO CLOSE ON THE RIIIGHT");
     moveFromWall(cerebellumClient, DIRECTIONS.left);
     lastDoor = Date.now();
+    await CommandExecution.waitForCommandToFinish();
     return true;
   }
 }
