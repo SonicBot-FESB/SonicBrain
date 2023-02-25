@@ -1,3 +1,4 @@
+const { commandResponseReceived, sendPositionData, writePointsAsync } = require("../../metrics");
 const RobotMotoricsState = require("../../state/robotMotoricsState");
 const FunctionMap = require("../../utils/functionMap");
 
@@ -10,10 +11,12 @@ function receiveDistanceSensorsValues(command, values) {
 
 function receiveGoBackResponse() {
   handleCommandFinished("BCK");
+  commandResponseReceived({ service: "cerebellum", value: "BCK"})
 }
 
 function receiveGoForwardResponse() {
   handleCommandFinished("FWD");
+  commandResponseReceived({ service: "cerebellum", value: "FWD"})
 }
 
 function receiveTurnResponse(command, [absoluteRotation, relativeRotation]) {
@@ -22,6 +25,12 @@ function receiveTurnResponse(command, [absoluteRotation, relativeRotation]) {
   absoluteRotation = Number(absoluteRotation);
   relativeRotation = Number(relativeRotation);
   console.log(`Turned to ${absoluteRotation} ${relativeRotation}`);
+
+  const currentDate = new Date();
+  writePointsAsync([
+    commandResponseReceived({ service: "cerebellum", value: `RTT ${absoluteRotation} ${relativeRotation}`}, currentDate, true),
+    sendPositionData({ position: absoluteRotation }, currentDate, true)
+  ])
 }
 
 function receiveGetPositionResponse(
@@ -32,25 +41,37 @@ function receiveGetPositionResponse(
   absoluteRotation = Number(absoluteRotation);
   relativeRotation = Number(relativeRotation);
   console.log(`Current position: ${absoluteRotation} ${relativeRotation}`);
+
+  const currentDate = new Date();
+
+  writePointsAsync([
+    commandResponseReceived({ service: "cerebellum", value: `POS ${absoluteRotation} ${relativeRotation}`}, currentDate, true),
+    sendPositionData({ position: absoluteRotation }, currentDate, true)
+  ])
 }
 
 function receiveRebootResponse() {
   handleCommandFinished("RBT");
+  commandResponseReceived({ service: "cerebellum", value: "RBT"})
 }
 
 function receiveError(cmd, args) {
   RobotMotoricsState.CommandExecution.erroredOut();
   console.log("ERROR");
   console.log(args.join(" "));
+
+  commandResponseReceived({ service: "cerebellum", value: `ERR ${args.join(" ")}`})
 }
 
 function receiveStopResponse(cmd, args) {
   handleCommandFinished("STP");
+  commandResponseReceived({ service: "cerebellum", value: "STP"})
 }
 
 
 function receiveResetPositionResponse(cmd, args) {
   handleCommandFinished("RPS");
+  commandResponseReceived({ service: "cerebellum", value: `RPS ${args.join(" ")}`})
 }
 
 

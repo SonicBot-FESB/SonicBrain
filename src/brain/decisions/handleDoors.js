@@ -1,3 +1,4 @@
+const { sendLog, sendDistanceData, writePoints } = require("../../metrics");
 const CerebellumService = require("../../services/sonicCerebellumService");
 const { RESET_POSITION } = require("../../services/sonicCerebellumService/send");
 const RobotMotoricsState = require("../../state/robotMotoricsState");
@@ -41,6 +42,13 @@ module.exports.handleDoors = async function({ cerebellumClient }) {
     sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
     await CommandExecution.waitForCommandToFinish();
     lastDoor = Date.now();
+
+    const currentDate = new Date();
+    await writePoints([
+      await sendLog({message: "Door left"}, currentDate, true),
+      await sendDistanceData(Distances.getAllDistanceMeans(), currentDate, true)
+    ])
+
     return true;
   }
 
@@ -48,6 +56,13 @@ module.exports.handleDoors = async function({ cerebellumClient }) {
     sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnRight, RESET_POSITION.yes);
     await CommandExecution.waitForCommandToFinish();
     lastDoor = Date.now();
+
+    const currentDate = new Date();
+    await writePoints([
+      await sendLog({message: "Door right"}, currentDate, true),
+      await sendDistanceData(Distances.getAllDistanceMeans(), currentDate, true)
+    ])
+
     return true;
   }
 

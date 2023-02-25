@@ -47,6 +47,17 @@ class RobotDistancesStorage {
         return distances.mean();
     }
 
+    static getAllDistanceMeans() {
+        return {
+            "frontLeft": this.getDistanceMean("frontLeft"),
+            "frontRight": this.getDistanceMean("frontRight"),
+            "leftFront": this.getDistanceMean("leftFront"),
+            "leftBack": this.getDistanceMean("leftBack"),
+            "rightFront": this.getDistanceMean("rightFront"),
+            "rightBack": this.getDistanceMean("rightBack"),
+        }
+    }
+
     static getDistanceRange(sensorPosition) {
         const distances = this.#distanceValues[sensorPosition]; 
         return distances.range();

@@ -1,4 +1,5 @@
 const serial = require("serialport");
+const { commandSent } = require("../../metrics");
 const RobotMotoricsState = require("../../state/robotMotoricsState");
 
 module.exports.TURN_DIRECTIONS = {
@@ -57,6 +58,8 @@ module.exports.sendResetPosition = function (serialPort) {
 }
 
 function handleExecuteCommand(command) {
+    commandSent({ service: "cerebellum", value: command })
+
     const isBlocked = RobotMotoricsState.CommandExecution.isExecutionBlocked();
     if (isBlocked) {
         console.log("Robot is blocked, can't accept new commands");

@@ -4,6 +4,7 @@
   "main": "src/index.js",
   "license": "MIT",
   "dependencies": {
+    "@influxdata/influxdb-client": "^1.33.1",
     "dotenv": "^16.0.3",
     "numjs": "^0.16.1",
     "serialport": "^10.5.0"
