@@ -6,6 +6,13 @@ const Brain = require("./brain");
 const { sendResetPosition } = require("./services/sonicCerebellumService/send.js");
 const { delay } = require("./utils/sleep.js");
 
+
+/* 
+* TODO: if wall to close front, check if there are doors on left and right
+* If last turn was LEFT and the robot goes to turn RIGHT check how long was he going forward inbetween
+*
+*/
+
 async function main(){
     let ocrClient = null;
     const intervalId1 = setInterval(() => {

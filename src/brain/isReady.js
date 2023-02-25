@@ -3,7 +3,7 @@ const RobotMotoricsState = require("../state/robotMotoricsState");
 
 module.exports.isReady = function() {
   return (
-    RobotMotoricsState.CommandExecution.isConnected &&
-    OcrCommandExecutionState.isConnected
+    OcrCommandExecutionState.isConnected &&
+    RobotMotoricsState.CommandExecution.isConnected
   );
 }

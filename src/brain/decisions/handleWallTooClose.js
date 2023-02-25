@@ -8,7 +8,7 @@ const { SENSOR_POSITION_PAIR_BY_DIRECTION } = require("../consts");
 const DIRECTION_WALL_MIN_DISTANCE = {
   left: 480,
   right: 480,
-  front: 500,
+  front: 550,
 }
 
 function moveFromWall(cerebellumClient, direction) {
@@ -66,7 +66,7 @@ module.exports.handleWallTooClose = async function({ cerebellumClient }) {
     return true;
   }
 
-  if (isFinite(lastDoor) && (Date.now() - lastDoor) < 2000) {
+  if (isFinite(lastDoor) && (Date.now() - lastDoor) < 1000) {
     return false;
   }
 

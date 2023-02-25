@@ -26,24 +26,27 @@ let lastDoor = Infinity;
 
 module.exports.handleDoors = async function({ cerebellumClient }) {
   const { DIRECTIONS } = RobotMotoricsState.Distances; 
+  const { CommandExecution } = RobotMotoricsState;
   const { sendTurn, TURN_DIRECTIONS } = CerebellumService.commands;
 
   const isDoorLeft = isDoor(DIRECTIONS.left);
   const isDoorRight = isDoor(DIRECTIONS.right);
 
-  if (isFinite(lastDoor) && (Date.now() - lastDoor) < 5100) {
+  if (isFinite(lastDoor) && (Date.now() - lastDoor) < 4100) {
     return false;
   }
 
 
   if (isDoorLeft) {
     sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
+    await CommandExecution.waitForCommandToFinish();
     lastDoor = Date.now();
     return true;
   }
 
   if (isDoorRight) {
     sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnRight, RESET_POSITION.yes);
+    await CommandExecution.waitForCommandToFinish();
     lastDoor = Date.now();
     return true;
   }
