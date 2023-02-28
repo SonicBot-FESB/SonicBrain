@@ -16,7 +16,7 @@ module.exports.handleCharacterPrediction = async function({ cerebellumClient, oc
   
   sendStop(cerebellumClient);
   CommandExecution.waitForCommandToFinish();
-  getPrediction(ocrClient);
+  await getPrediction(ocrClient);
   OcrCommandExecutionState.waitForCommandToFinish();
   console.log("HURAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
   console.log("DOBILI SMO SLOVOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")

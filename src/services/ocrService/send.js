@@ -1,4 +1,5 @@
 const net = require("net");
+const { commandSent } = require("../../metrics");
 const { OcrCommandExecutionState } = require("../../state/characterRecognitionState");
 
 /**
@@ -6,19 +7,23 @@ const { OcrCommandExecutionState } = require("../../state/characterRecognitionSt
  *
  * @param {net.Socket} client - 
  */
-module.exports.startOcr = function(client) {
+module.exports.startOcr = async function(client) {
     client.write("ONN");
+    await commandSent({service: "ocr", value: "ONN"})
 }
 
-module.exports.stopOcr = function(client) {
+module.exports.stopOcr = async function(client) {
     client.write("OFF");
+    await commandSent({service: "ocr", value: "OFF"})
 }
 
-module.exports.getStatus = function(client) {
+module.exports.getStatus = async function(client) {
     client.write("STT");
+    await commandSent({service: "ocr", value: "STT"})
 }
 
-module.exports.getPrediction = function(client) {
+module.exports.getPrediction = async function(client) {
     client.write("PRD");
-    OcrCommandExecutionState.setCommandInExecution("PRD");
+    await commandSent({service: "ocr", value: "PRD"})
+    OcrCommandExecutionState.setCommandInExecution("PRD")
 }

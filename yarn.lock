@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@influxdata/influxdb-client@^1.33.1":
+  version "1.33.1"
+  resolved "https://registry.yarnpkg.com/@influxdata/influxdb-client/-/influxdb-client-1.33.1.tgz#e3eb1edc5096bcada929cbd44420074b4e04180a"
+  integrity sha512-MAKevkaXAVMGqCqEHA0bBd10wzHjF4UDk1Dhkx7rWR784VpiOFxFjMBtO7A4f3jJGSdqdMvn8Lr1U/iS8PlVNw==
+
 "@serialport/binding-mock@10.2.2":
   version "10.2.2"
   resolved "https://registry.yarnpkg.com/@serialport/binding-mock/-/binding-mock-10.2.2.tgz#d322a8116a97806addda13c62f50e73d16125874"

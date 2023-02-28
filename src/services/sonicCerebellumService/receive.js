@@ -1,30 +1,39 @@
+const { commandResponseReceived, sendPositionData, writePointsAsync } = require("../../metrics");
 const RobotMotoricsState = require("../../state/robotMotoricsState");
 const FunctionMap = require("../../utils/functionMap");
 
 const { Movement: MovementState, Distances: DistancesState } = RobotMotoricsState;
 
-function receiveDistanceSensorsValues(command, values) {
+async function receiveDistanceSensorsValues(command, values) {
   values = values.map(Number);
   DistancesState.setDistanceMeasurements(values);
 }
 
-function receiveGoBackResponse() {
+async function receiveGoBackResponse() {
   handleCommandFinished("BCK");
+  await commandResponseReceived({ service: "cerebellum", value: "BCK"})
 }
 
-function receiveGoForwardResponse() {
+async function receiveGoForwardResponse() {
   handleCommandFinished("FWD");
+  await commandResponseReceived({ service: "cerebellum", value: "FWD"})
 }
 
-function receiveTurnResponse(command, [absoluteRotation, relativeRotation]) {
+async function receiveTurnResponse(command, [absoluteRotation, relativeRotation]) {
   handleCommandFinished("TRN");
   MovementState.stop(); // After turning the robot stops
   absoluteRotation = Number(absoluteRotation);
   relativeRotation = Number(relativeRotation);
   console.log(`Turned to ${absoluteRotation} ${relativeRotation}`);
+
+  const currentDate = new Date();
+  await writePointsAsync([
+    commandResponseReceived({ service: "cerebellum", value: `RTT ${absoluteRotation} ${relativeRotation}`}, currentDate, true),
+    sendPositionData({ position: absoluteRotation }, currentDate, true)
+  ])
 }
 
-function receiveGetPositionResponse(
+async function receiveGetPositionResponse(
   command,
   [absoluteRotation, relativeRotation]
 ) {
@@ -32,25 +41,37 @@ function receiveGetPositionResponse(
   absoluteRotation = Number(absoluteRotation);
   relativeRotation = Number(relativeRotation);
   console.log(`Current position: ${absoluteRotation} ${relativeRotation}`);
+
+  const currentDate = new Date();
+
+  await writePointsAsync([
+    commandResponseReceived({ service: "cerebellum", value: `POS ${absoluteRotation} ${relativeRotation}`}, currentDate, true),
+    sendPositionData({ position: absoluteRotation }, currentDate, true)
+  ])
 }
 
-function receiveRebootResponse() {
+async function receiveRebootResponse() {
   handleCommandFinished("RBT");
+  await commandResponseReceived({ service: "cerebellum", value: "RBT"})
 }
 
-function receiveError(cmd, args) {
+async function receiveError(cmd, args) {
   RobotMotoricsState.CommandExecution.erroredOut();
   console.log("ERROR");
   console.log(args.join(" "));
+
+  await commandResponseReceived({ service: "cerebellum", value: `ERR ${args.join(" ")}`})
 }
 
-function receiveStopResponse(cmd, args) {
+async function receiveStopResponse(cmd, args) {
   handleCommandFinished("STP");
+  await commandResponseReceived({ service: "cerebellum", value: "STP"})
 }
 
 
-function receiveResetPositionResponse(cmd, args) {
+async function receiveResetPositionResponse(cmd, args) {
   handleCommandFinished("RPS");
+  await commandResponseReceived({ service: "cerebellum", value: `RPS ${args.join(" ")}`})
 }
 
 

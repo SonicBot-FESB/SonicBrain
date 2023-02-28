@@ -1,3 +1,4 @@
+const { sendLog, sendDistanceData, writePoints, writePointsAsync } = require("../../metrics");
 const CerebellumService = require("../../services/sonicCerebellumService");
 const { RESET_POSITION } = require("../../services/sonicCerebellumService/send");
 const RobotMotoricsState = require("../../state/robotMotoricsState");
@@ -25,6 +26,7 @@ function isDoor(direction) {
 let lastDoor = Infinity;
 
 module.exports.handleDoors = async function({ cerebellumClient }) {
+  const { Distances } = RobotMotoricsState;
   const { DIRECTIONS } = RobotMotoricsState.Distances; 
   const { CommandExecution } = RobotMotoricsState;
   const { sendTurn, TURN_DIRECTIONS } = CerebellumService.commands;
@@ -38,16 +40,38 @@ module.exports.handleDoors = async function({ cerebellumClient }) {
 
 
   if (isDoorLeft) {
-    sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
+    await writePointsAsync([
+      sendLog({message: "Door left detected"}, new Date(), true),
+      sendDistanceData(Distances.getAllDistanceMeans(), new Date(), true)
+    ])
+
+    await sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
     await CommandExecution.waitForCommandToFinish();
     lastDoor = Date.now();
+
+    await writePointsAsync([
+      sendLog({message: "Door left turned"}, new Date(), true),
+      sendDistanceData(Distances.getAllDistanceMeans(), new Date(), true)
+    ])
+
     return true;
   }
 
   if (isDoorRight) {
-    sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnRight, RESET_POSITION.yes);
+    await writePointsAsync([
+      sendLog({message: "Door right detected"}, new Date(), true),
+      sendDistanceData(Distances.getAllDistanceMeans(), new Date(), true)
+    ])
+
+    await sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnRight, RESET_POSITION.yes);
     await CommandExecution.waitForCommandToFinish();
     lastDoor = Date.now();
+
+    await writePointsAsync([
+      sendLog({message: "Door right turned"}, new Date(), true),
+      sendDistanceData(Distances.getAllDistanceMeans(), new Date(), true)
+    ])
+
     return true;
   }
 

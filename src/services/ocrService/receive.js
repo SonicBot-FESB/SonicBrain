@@ -1,31 +1,44 @@
+const { commandResponseReceived, writePointsAsync, sendPredictionData } = require("../../metrics");
 const { CharacterRecognitionState, OcrCommandExecutionState } = require("../../state/characterRecognitionState");
 
 
-function receiveStartOcrResponse(cmd, data) {
+async function receiveStartOcrResponse(cmd, data) {
   CharacterRecognitionState.isOcrRunning = true;
+  await commandResponseReceived({ service: "ocr", value: cmd})
 }
 
-function receiveStopOcrResponse(cmd, data) {
+async function receiveStopOcrResponse(cmd, data) {
   CharacterRecognitionState.isOcrRunning = false;
+  await commandResponseReceived({ service: "ocr", value: cmd})
 }
 
-function receiveGetStatusResponse(_, data) {
+async function receiveGetStatusResponse(cmd, data) {
   const isRunning = data[0] === "1";
   CharacterRecognitionState.isOcrRunning = isRunning;
+  await commandResponseReceived({ service: "ocr", value: `${cmd} ${data.join(" ")}`})
 }
 
-function receiveError(cmd, [error]) {
+async function receiveError(cmd, [error]) {
   console.error(`Received: ${error}`);
+  CharacterRecognitionState.isOcrRunning = isRunning;
+  await commandResponseReceived({ service: "ocr", value: `${cmd} ${error}`})
 }
 
-function receiveCharacterDetected() {
+async function receiveCharacterDetected(cmd, _) {
   CharacterRecognitionState.characterDetected();
+  await commandResponseReceived({ service: "ocr", value: `${cmd}`})
 }
 
-function receivePredictions(cmd, [character, prediction]) {
+async function receivePredictions(cmd, [character, prediction]) {
   OcrCommandExecutionState.commandExecuted(cmd);
   console.log(character, Number(prediction));
   CharacterRecognitionState.setPredictions(character, Number(prediction));
+
+  await writePointsAsync([
+    commandResponseReceived({ service: "ocr", value: `${cmd} ${character} ${prediction}`}, new Date(), true),
+    sendPredictionData({ chance: Number(prediction), character: character }, new Date(), true),
+  ])
+  
 }
 
 const handlersByCommandName = {
