@@ -17,12 +17,12 @@ module.exports.handleCharacterPrediction = async function({ cerebellumClient, oc
   }
   
   await sendStop(cerebellumClient);
-  CommandExecution.waitForCommandToFinish();
+  await CommandExecution.waitForCommandToFinish();
+  await delay(500);
   await getPrediction(ocrClient);
-  OcrCommandExecutionState.waitForCommandToFinish();
+  await OcrCommandExecutionState.waitForCommandToFinish();
   await getImage(ocrClient);
-  OcrCommandExecutionState.waitForCommandToFinish();
-
-  await delay(1000);
+  await OcrCommandExecutionState.waitForCommandToFinish();
+  await delay(500);
   return true;
 }

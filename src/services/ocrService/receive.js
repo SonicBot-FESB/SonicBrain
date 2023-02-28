@@ -41,7 +41,7 @@ async function receivePredictions(cmd, [character, prediction]) {
 
 async function receiveImg(cmd, _) {
   OcrCommandExecutionState.commandExecuted(cmd);  
-  await commandResponseReceived({ service: "ocr", value: `${cmd} ${character} ${prediction}`});
+  await commandResponseReceived({ service: "ocr", value: `${cmd}`});
 }
 
 const handlersByCommandName = {
