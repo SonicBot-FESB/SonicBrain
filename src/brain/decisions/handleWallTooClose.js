@@ -1,4 +1,4 @@
-const { sendDistanceData, sendLog, writePoints } = require("../../metrics");
+const { sendDistanceData, sendLog, writePoints, writePointsAsync } = require("../../metrics");
 const CerebellumService = require("../../services/sonicCerebellumService");
 const { RESET_POSITION } = require("../../services/sonicCerebellumService/send");
 const RobotMotoricsState = require("../../state/robotMotoricsState");
@@ -12,7 +12,7 @@ const DIRECTION_WALL_MIN_DISTANCE = {
   front: 550,
 }
 
-function moveFromWall(cerebellumClient, direction) {
+async function moveFromWall(cerebellumClient, direction) {
   const { DIRECTIONS } = RobotMotoricsState.Distances;
   const { TURN_DIRECTIONS, sendTurn } = CerebellumService.commands;
 
@@ -21,7 +21,7 @@ function moveFromWall(cerebellumClient, direction) {
     turnDirection = TURN_DIRECTIONS.turnRight;
   }
 
-  sendTurn(
+  await sendTurn(
     cerebellumClient,
     5, turnDirection, RESET_POSITION.yes,
   );
@@ -54,21 +54,24 @@ module.exports.handleWallTooClose = async function({ cerebellumClient }) {
 
   if (isWallTooCloseLeft && isWallTooCloseRight) {
     console.log("Robot probably stuck...");
-    sendStop(cerebellumClient);
+    await sendStop(cerebellumClient);
     return;
   }
 
   if (isWallTooCloseFront) {
-    console.log("WALL TO CLOSE ON THE FRONT");
-    sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
+    await writePointsAsync([
+      sendLog({ message: "Wall too close front" }, new Date(), true),
+      sendDistanceData(Distances.getAllDistanceMeans(), new Date(), true)
+    ])
+
+    await sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
     await CommandExecution.waitForCommandToFinish();
-    sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
+    await sendTurn(cerebellumClient, 90, TURN_DIRECTIONS.turnLeft, RESET_POSITION.yes);
     await CommandExecution.waitForCommandToFinish();
 
-    const currentDate = new Date();
-    writePoints([
-      await sendLog({ message: "Wall too close front" }, currentDate, true),
-      await sendDistanceData(Distances.getAllDistanceMeans(), currentDate, true)
+    await writePointsAsync([
+      sendLog({ message: "Moved from wall front" }, new Date(), true),
+      sendDistanceData(Distances.getAllDistanceMeans(), new Date(), true)
     ])
 
     return true;
@@ -79,30 +82,36 @@ module.exports.handleWallTooClose = async function({ cerebellumClient }) {
   }
 
   if (isWallTooCloseLeft) {
-    console.log("WALL TOO CLOSE ON THE LEFT");
-    moveFromWall(cerebellumClient, DIRECTIONS.right);
-    lastDoor = Date.now();
-    await CommandExecution.waitForCommandToFinish();
+    await writePointsAsync([
+      sendLog({ message: "Wall too close left" }, new Date(), true),
+      sendDistanceData(Distances.getAllDistanceMeans(), new Date(), true)
+    ])
 
-    const currentDate = new Date();
-    writePoints([
-      await sendLog({ message: "Wall too close left" }, currentDate, true),
-      await sendDistanceData(Distances.getAllDistanceMeans(), currentDate, true)
+    await moveFromWall(cerebellumClient, DIRECTIONS.right);
+    await CommandExecution.waitForCommandToFinish();
+    lastDoor = Date.now();
+
+    await writePointsAsync([
+      sendLog({ message: "Moved away from wall" }, new Date(), true),
+      sendDistanceData(Distances.getAllDistanceMeans(), new Date(), true)
     ])
 
     return true;
   }
 
   if (isWallTooCloseRight) {
-    console.log("WALL TOO CLOSE ON THE RIIIGHT");
-    moveFromWall(cerebellumClient, DIRECTIONS.left);
-    lastDoor = Date.now();
-    await CommandExecution.waitForCommandToFinish();
+    await writePointsAsync([
+      sendLog({ message: "Wall too close right" }, new Date(), true),
+      sendDistanceData(Distances.getAllDistanceMeans(), new Date(), true)
+    ])
 
-    const currentDate = new Date();
-    writePoints([
-      await sendLog({ message: "Wall too close right" }, currentDate, true),
-      await sendDistanceData(Distances.getAllDistanceMeans(), currentDate, true)
+    await moveFromWall(cerebellumClient, DIRECTIONS.left);
+    await CommandExecution.waitForCommandToFinish();
+    lastDoor = Date.now();
+
+    await writePointsAsync([
+      sendLog({ message: "Moved from wall right" }, new Date(), true),
+      sendDistanceData(Distances.getAllDistanceMeans(), new Date(), true)
     ])
 
     return true;

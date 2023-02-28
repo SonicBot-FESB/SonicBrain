@@ -23,7 +23,7 @@ module.exports.sendDistanceData = async function({frontLeft, frontRight, leftFro
   if (returnPoint) return point;
 
   writeApi.writePoint(point)
-  await writeApi.close()
+  await writeApi.flush()
 }
 
 
@@ -35,7 +35,7 @@ module.exports.sendPositionData = async function({position}, timestamp, returnPo
 
   if (returnPoint) return point;
   writeApi.writePoint(point)
-  await writeApi.close()
+  await writeApi.flush()
 }
 
 
@@ -47,7 +47,7 @@ module.exports.sendPredictionData = async function({character, chance}, timestam
 
   if (returnPoint) return point;
   writeApi.writePoint(point)
-  await writeApi.close()
+  await writeApi.flush()
 }
 
 
@@ -60,7 +60,7 @@ module.exports.commandSent = async function({service, value}, timestamp, returnP
 
   if (returnPoint) return point;
   writeApi.writePoint(point)
-  await writeApi.close()
+  await writeApi.flush()
 }
 
 
@@ -73,7 +73,7 @@ module.exports.commandResponseReceived = async function({service, value}, timest
 
   if (returnPoint) return point;
   writeApi.writePoint(point)
-  await writeApi.close()
+  await writeApi.flush()
 }
 
 module.exports.sendLog = async function({message, type}, timestamp, returnPoint) {
@@ -86,16 +86,16 @@ module.exports.sendLog = async function({message, type}, timestamp, returnPoint)
 
   if (returnPoint) return point;
   writeApi.writePoint(point)
-  await writeApi.close()
+  await writeApi.flush()
 }
 
 module.exports.writePoints = async function(points) {
   writeApi.writePoints(points);
-  await writeApi.close();
+  await writeApi.flush();
 }
 
 module.exports.writePointsAsync = async function(pointPromises) {
   const points = await Promise.all(pointPromises);
   writeApi.writePoints(points);
-  await writeApi.close();
+  await writeApi.flush();
 }

@@ -92,7 +92,7 @@ class RobotCommandExecutionState {
 
     static commandExecuted(command) {
         if (!this.isCommandBeingExecuted(command)) {
-            throw `Command ${command} is not currently being executed`;
+            console.error(`Command ${command} is not currently being executed`);
         }
         const duration = Date.now() - this.#commandStartedAt;
         this.#commandInExecution = null;

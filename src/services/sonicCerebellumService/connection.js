@@ -15,10 +15,7 @@ async function connect() {
     const readParser = new serial.ReadlineParser();
     serialPort.pipe(readParser);
 
-    readParser.on("data", (data) => {
-        onData(data);
-        // serialPort.flush();
-    });
+    readParser.on("data", onData);
 
     readParser.on("close", () => {
         console.log("Connection to microcontroller ended!");
@@ -32,7 +29,7 @@ async function connect() {
     return serialPort;
 }
 
-function onData(data) {
+async function onData(data) {
     data = data.slice(0, -1);
     const [command, ...values] = data.split(" ")
 
@@ -42,7 +39,7 @@ function onData(data) {
         return;
     }
 
-    cmdHandler(command, values);
+    await cmdHandler(command, values);
 }
 
 module.exports = connect;

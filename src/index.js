@@ -1,6 +1,6 @@
 const OcrService = require("./services/ocrService");
 const CerebellumService = require("./services/sonicCerebellumService");
-const { CharacterRecognitionState } = require("./state/characterRecognitionState.js");
+const { OcrCommandExecutionState } = require("./state/characterRecognitionState.js");
 const RobotMotoricsState = require("./state/robotMotoricsState.js");
 const Brain = require("./brain");
 const { sendResetPosition } = require("./services/sonicCerebellumService/send.js");
@@ -15,9 +15,10 @@ const { delay } = require("./utils/sleep.js");
 
 async function main(){
     let ocrClient = null;
+    console.log("Connecting to OCR service");
     const intervalId1 = setInterval(() => {
         ocrClient = OcrService.client.connect()
-        if (CharacterRecognitionState.isConnectedToOcr) {
+        if (OcrCommandExecutionState.isConnected) {
             clearInterval(intervalId1);
             console.log("Connected to OCR server!")
         }
@@ -30,7 +31,7 @@ async function main(){
         if (RobotMotoricsState.CommandExecution.isConnected) {
             clearInterval(intervalId2);
             console.log("Connected to teensy");
-            sendResetPosition(cerebellumClient);
+            await sendResetPosition(cerebellumClient);
         }
     }, 1000);
 
