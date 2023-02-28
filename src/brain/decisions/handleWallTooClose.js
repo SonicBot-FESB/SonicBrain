@@ -23,7 +23,7 @@ async function moveFromWall(cerebellumClient, direction) {
 
   await sendTurn(
     cerebellumClient,
-    5, turnDirection, RESET_POSITION.yes,
+    8, turnDirection, RESET_POSITION.yes,
   );
 }
 

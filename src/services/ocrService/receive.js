@@ -31,14 +31,17 @@ async function receiveCharacterDetected(cmd, _) {
 
 async function receivePredictions(cmd, [character, prediction]) {
   OcrCommandExecutionState.commandExecuted(cmd);
-  console.log(character, Number(prediction));
   CharacterRecognitionState.setPredictions(character, Number(prediction));
 
   await writePointsAsync([
     commandResponseReceived({ service: "ocr", value: `${cmd} ${character} ${prediction}`}, new Date(), true),
     sendPredictionData({ chance: Number(prediction), character: character }, new Date(), true),
   ])
-  
+}
+
+async function receiveImg(cmd, _) {
+  OcrCommandExecutionState.commandExecuted(cmd);  
+  await commandResponseReceived({ service: "ocr", value: `${cmd} ${character} ${prediction}`});
 }
 
 const handlersByCommandName = {
@@ -48,6 +51,7 @@ const handlersByCommandName = {
   "ERR": receiveError,
   "PRD": receivePredictions,
   "CHR": receiveCharacterDetected,
+  "IMG": receiveImg,
 };
 
 module.exports = handlersByCommandName;

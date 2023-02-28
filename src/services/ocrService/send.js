@@ -27,3 +27,9 @@ module.exports.getPrediction = async function(client) {
     await commandSent({service: "ocr", value: "PRD"})
     OcrCommandExecutionState.setCommandInExecution("PRD")
 }
+
+module.exports.getImage = async function(client) {
+    client.write("IMG");
+    await commandSent({service: "ocr", value: "IMG"})
+    OcrCommandExecutionState.setCommandInExecution("IMG")
+}
